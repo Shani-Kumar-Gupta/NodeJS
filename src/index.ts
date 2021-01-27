@@ -1,76 +1,8 @@
-// Create and start server
-import * as express from 'express';
-// mongodb connection
-import * as mongoose from 'mongoose';
-import { getEnvironmentVariable } from './environments/env';
+import { Server } from "./server";
 
-let app: express.Application = express(); // called express constructor
-
-app.listen(5000, () => {
+let server = new Server().app;
+let port = 5000;
+// called express constructor
+server.listen(port, () => {
     console.log('Server is running on port 5000');
-})
-
-// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: connect mongodb to server ::::::::::::::::::::::::::::::::::::::::::::::::::::::
-mongoose.connect(getEnvironmentVariable().db_url, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(() => {
-        console.log('mongodb is connected');
-    })
-
-/************************************ Pre Middleware ***************************************** */
-app.use((req, res, next) => {
-    console.log('called middleware');
-    next();
-})
-
-app.use('/login', (res, req, next) => {
-    console.log('Login Middleware called');
-    next();
-})
-
-/*
-    Basic of Routing
-        1) app.get('');
-        2) app.post(path: '');
-        3) app.patch(path: '');
-        4) app.put(path: '');
-        5) app.delete(path: '');
-*/
-
-app.get('/user', (req: any, res, next) => {
-    const data = { firstName: "Shani", city: "Renukkot" }
-    req.user = data;
-    next();
-}, (req: any, res, next) => {
-    console.log("called another middleware");
-    res.send(req.user)
-    next()
-})
-
-app.get('/login', (req, res) => {
-    // want to send data in json which is not in json format
-    //res.status(200).send('successs');
-    // res.json({
-    //     firstName : "Shani",
-    //     lastName : "Gupta",
-    // })
-
-    // In case you are geeting data in json format
-    const data = { name: "Shani Kumar Gupta", college: "GLA University" }
-    res.send(data);
-})
-
-app.get('/test', (req, res) => {
-    res.send('this is test request');
-})
-
-/* login route */
-app.get('/api/user/login', (req, res) => {
-    console.log('Called login route::::::::::::');
-    res.status(200).send('Successfully login');
-})
-
-/* signup route */
-app.post('/api/user/signup', function (req, res) {
-    console.log('Called signup route::::::::::::');
-    res.send('Successfully Signup');
 })
